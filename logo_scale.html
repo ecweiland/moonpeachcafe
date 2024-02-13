@@ -1,0 +1,342 @@
+<!doctype html> 
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+        <meta charset="utf-8">
+        <title>Moon Peach Cafe</title>
+        <style>
+            /*            setting the basics        */
+            @font-face{
+                font-family: "Pixel Art";
+                src: url(./style/fonts/PixelArt.otf);
+            }
+            *{
+                font-family: 'Pixel Art', sans-serif;
+                color: #000000;
+                font-size: 40px;
+            }
+            body, html{
+                margin: 0;
+                cursor: default;
+                background: #ffffff;
+            }
+
+
+            #container{
+                position: fixed;
+                width: 100%;
+                height: 100%;
+
+                display: flex;
+                align-content: center;
+                align-items: center;
+                justify-content: center;
+
+                cursor: pointer;
+                user-select: none;
+                overflow: hidden;
+            }
+            img{
+                text-align: center;
+                line-height: 1;
+                text-transform: uppercase;
+                margin-block-start: 0;
+                margin-block-end: 0;
+                margin: 0 2.5vw;
+            }
+
+            .logo{
+                position: absolute;
+                width: 280px;
+                height: 190px;
+                font-size: 10px;
+                border-radius: 10px;
+
+                display: flex;
+                justify-content: center;
+                align-content: center;
+                align-items: center;
+
+                transition: 1s all ease-in;
+                animation: 3s grow linear forwards;
+
+                color: #ff922e;
+                background: #ffffff;
+
+            }
+
+            .dialogBox{
+                position: absolute;
+                width: 800px;
+                height: 720px;
+                font-size: 10px;
+                border-radius: 10px;
+
+                display: flex;
+                justify-content: center;
+                align-content: center;
+                align-items: center;
+                opacity: 0;
+
+                transition: 2s all ease-in;
+                animation: 2s fadeIn linear forwards;
+                animation-delay: 3s;
+
+                color: #ff922e;
+                background: #ffffff;
+
+            }
+
+            .fadeOut{
+                animation: 2s fadeOut linear forwards;
+            }
+
+            .fadeIn{
+                animation: 2s fadeIn linear forwards;
+            }
+
+            .dialogText{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            @keyframes grow{
+                0%{
+                    transform: scale(.1);
+                    opacity: .25;
+                }
+                50%{
+                    transform: scale(3);
+                    opacity: 1;
+                }
+                75%{
+                    transform: scale(3);
+                    opacity: 1;
+                }
+                100%{
+                    transform: scale(3);
+                    opacity: 0;
+                }
+            }
+
+            .dialogImg{
+                position: relative;
+                z-index: 0;
+            }
+            .buttons{
+                position: absolute;
+                z-index: 1;
+                top: 65%;
+                left: auto;
+
+            }
+
+            .eatControls{
+                position: absolute;
+                z-index: 1;
+                top: 75%;
+                left: auto;
+                opacity: 0;
+            }
+
+            @keyframes fadeIn{
+                0%{
+                    opacity: 0;
+                }
+                100%{
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut{
+                0%{
+                    opacity: 1;
+                }
+                100%{
+                    opacity: 0;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <section id="container" class="invert">
+            <img class="logo" src="./images/moonpeach_logo.png">
+            <div id="dialogBox" class="dialogBox">
+                <img class="dialogImg" src="./images/dialog.png">
+                <div class="dialogText"></div>
+                <div class="buttons">
+                    <img id="moonButton" src="./images/moonButton.png">
+                    <img id="peachButton" src="./images/peachButton.png">
+                </div>
+            </div>
+            <img id="eatButton" class="eatControls" src="./images/eatButton.png">
+        </section>
+
+        <script>
+            // create a variable for the container 
+            const container = document.getElementById("container")
+            const moonButton = document.getElementById("moonButton")
+            const peachButton = document.getElementById("peachButton")
+            const dialogBox = document.getElementById("dialogBox")
+            const eatButton = document.getElementById("eatButton")
+            
+            let peach;
+            let moon;
+            let peachTrue = false;
+            let moonTrue = false;
+            let eat = false;
+            let rotateYAmount = 0;
+            let translateZAmount = 0;
+            // add an event listener for "click", name is "addDiv" and link it to the container variable
+            //container.addEventListener("click", addDiv)
+
+            const div = document.querySelector(".dialogText")
+            const textLoad = "Hello! Welcome to Moon Peach Cafe. Would you like a moon or a peach?"
+           
+            function preload(){
+                peach = loadModel("./3d/peach2.obj");
+                moon = loadModel('./3d/moon.obj');
+            }
+
+            function setup() {
+                createCanvas(windowWidth, windowHeight, WEBGL);
+                background(255);
+            }
+
+            function draw(){
+                if(peachTrue){
+                    drawPeach()
+                }
+                if(moonTrue){
+                    drawMoon()
+                }
+            }
+            
+            function drawMoon(){
+                background(255);
+                //rotate needs to be before instantiating the model
+                rotateX(Math.PI);
+                rotateYAmount += 0.01;
+                if(eat){
+                    translateZAmount += -3;
+                    rotateYAmount = 90*Math.PI/180;
+                }
+                rotateY(rotateYAmount);
+                translate(-translateZAmount, 0, 0);
+                scale(20);
+                ambientLight(150);
+                let dirX = (mouseX / width - 0.5) * 2;
+                let dirY = (mouseY / height - 0.5) * 2;
+                directionalLight(250, 250, 250, -dirX, -dirY, -1);
+                normalMaterial();
+                push();
+                fill(250, 219, 111);
+                model(moon);
+                pop();
+            }
+
+            function drawPeach() {
+                background(255);
+                //rotate needs to be before instantiating the model
+                rotateX(Math.PI);
+                rotateYAmount += 0.01;
+                if(eat){
+                    translateZAmount += -3;
+                    rotateYAmount = 90*Math.PI/180;
+                }
+                rotateY(rotateYAmount);
+                translate(-translateZAmount, 0, 0);
+                scale(20);
+                ambientLight(150);
+                let dirX = (mouseX / width - 0.5) * 2;
+                let dirY = (mouseY / height - 0.5) * 2;
+                directionalLight(250, 250, 250, -dirX, -dirY, -1);
+                normalMaterial();
+                push();
+                fill(249, 149, 132);
+                model(peach);
+                pop();
+            }
+
+            
+            function textTypingEffect(element, textLoad, i=0) {
+
+                //clear string
+                if(i === 0){
+                    element.textContent = "";
+                }
+                //move to next char in string
+                element.textContent += textLoad[i]
+
+                //length limiter
+                if(i==textLoad.length-1){
+                    return
+                }
+
+                //character types every 50ms
+                setTimeout(() => textTypingEffect(element, textLoad, i + 1), 50)  
+                
+            }
+            
+            function giveMoon(){
+                //console.log("moon!!")
+                dialogBox.classList.remove('fadeIn')
+                dialogBox.classList.add('fadeOut')
+                drawMoon()
+                moonTrue = true;
+                eatButton.classList.remove('setInvisible')
+                eatButton.classList.add('fadeIn')
+            }
+
+            function givePeach(){
+                //console.log("peache!!")
+                dialogBox.classList.remove('fadeIn')
+                dialogBox.classList.add('fadeOut')
+                drawPeach()
+                peachTrue = true;
+                //eatButton.style.display = "flex"
+                eatButton.classList.add('fadeIn')
+            }
+
+            function eatObject(){
+                eat = true;
+                eatButton.classList.remove('fadeIn')
+                eatButton.classList.add('fadeOut')
+                
+                dialogBox.classList.remove('fadeOut')
+                setTimeout(() => dialogBox.classList.add('fadeIn'), 5000)
+                setTimeout(() => resetValues(), 7000)
+            }
+
+            function resetValues(){
+                clear()
+                peachTrue = false;
+                moonTrue = false;
+                eat = false;
+                translateZAmount = 0;
+            }
+
+            /*set initial delay. can also use setinterval
+            
+            setInterval(textTypingEffect, 3000)
+            let myInterval = setInterval(textTypingEffect, 3000)
+            clearInterval(myInterval)
+            
+            let myTimeoutName;
+            clearTimeout(myTimeoutName)
+            */
+
+            setTimeout(() => textTypingEffect(div, textLoad), 3000)
+            moonButton.addEventListener("click", giveMoon)
+            peachButton.addEventListener("click", givePeach)
+            eatButton.addEventListener("click", eatObject)
+            // create your function "addDiv", don't forget that the number will have to get "+ 1" at each click; otherwise it's not a counter..
+            
+        
+        </script>
+    </body>
+</html>
