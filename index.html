@@ -89,11 +89,11 @@
             }
 
             .fadeOut{
-                animation: 2s fadeOut linear forwards;
+                animation: 1s fadeOut linear forwards;
             }
 
             .fadeIn{
-                animation: 2s fadeIn linear forwards;
+                animation: 1s fadeIn linear forwards;
             }
 
             .dialogText{
@@ -203,7 +203,7 @@
             }
 
             function setup() {
-                createCanvas(windowWidth, windowHeight, WEBGL);
+                const canv = createCanvas(windowWidth, windowHeight, WEBGL);
                 background(255);
             }
 
@@ -306,13 +306,14 @@
                 eatButton.classList.add('fadeOut')
                 
                 dialogBox.classList.remove('fadeOut')
-                setTimeout(() => resetValues(), 7000)
-                setTimeout(() => dialogBox.classList.add('fadeIn'), 9000)
+                setTimeout(() => dialogBox.classList.add('fadeIn'), 4000)
+                setTimeout(() => resetValues(), 4000)
             }
 
             function resetValues(){
                 console.log("clearing");
-                clear();
+                const canv = createCanvas(windowWidth, windowHeight, WEBGL);
+                canv.clear();
                 peachTrue = false;
                 moonTrue = false;
                 eat = false;
